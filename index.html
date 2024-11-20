@@ -24,35 +24,20 @@
 						<div class="col-xs-12 row">
 							<div class="col-xs-6">
 								<div class="clearfix">
-									<div class="col-xs-2"></div>
-									<div class="col-xs-5"><label><input type="radio" name="type" id="typeDuration" checked="checked"/> duration (isochrone)</label></div>
-									<div class="col-xs-3"><input type="text" name="value" id="durationValue" value="300" size="7" class="form-control"/></div>
-									<div class="col-xs-2">seconds</div>
-								</div>
-								<div class="clearfix">
-									<div class="col-xs-2">- or -</div>
-									<div class="col-xs-5"><label><input type="radio" name="type"/> distance (isodistance)</label></div>
-									<div class="col-xs-3"><input type="text" name="value" id="distanceValue" value="1000" size="7" class="form-control"/></div>
-									<div class="col-xs-2">meters</div>
+									<!-- <div class="col-xs-2">- or -</div> -->
+									<div class="col-xs-5"><label>Total Distance</label></div>
+									<div class="col-xs-3"><input type="text" name="value" id="distanceValue" value="7" size="7" class="form-control"/></div>
+									<div class="col-xs-2">Kilometers</div>
 								</div>
 							</div>
 							<div class="col-xs-6">
 								<div class="col-xs-6">
-									<input type="submit" value="Compute the polygon!" class="form-control"/>
+									<input type="submit" value="Create the Run!" class="form-control"/>
 								</div>
 								<div class="col-xs-6">
 									<div class="alert alert-warning" id="computing">Computing...</div>
 									<div class="alert alert-danger" id="error">Error...</div>
 								</div>
-							</div>
-						</div>
-						<div class="col-xs-12">
-							<div class="col-xs-1">Mode</div>
-							<div class="col-xs-9">
-								<label><input type="radio" name="mode" id="modeWalking" checked="checked"/> walking</label>
-								<label><input type="radio" name="mode" id="modeBicycling"/> bicycling</label>
-								<label><input type="radio" name="mode" id="modeDriving"/> driving</label>
-								<label><input type="radio" name="mode"/> transit</label>
 							</div>
 						</div>
 					</div>
@@ -79,18 +64,6 @@
 					'Maroon', 'DarkGreen', 'Navy', 'Olive', 'Purple', 'Teal'];
 					// routeUrls = "";
 					var routeUrls = [];
-//     { color: 'Purple', url: 'https://www.google.com/maps/dir/?api=1&origin=52.079706,5.102774&destination=52.079706,5.102774&waypoints=52.085460892350405,5.102774%7C52.086834512679644,5.107953167623184' },
-//     { color: 'Green', url: 'https://www.google.com/maps/dir/?api=1&origin=52.079706,5.102774&destination=52.079706,5.102774&waypoints=52.086834512679644,5.107953167623184%7C52.076615830056255,5.112284565162952' },
-//     { color: 'Red', url: 'https://www.google.com/maps/dir/?api=1&origin=52.079706,5.102774&destination=52.079706,5.102774&waypoints=52.085460892350405,5.102774%7C52.08279616994375,5.112284565162952' },
-//     { color: 'Navy', url: 'https://www.google.com/maps/dir/?api=1&origin=52.079706,5.102774&destination=52.079706,5.102774&waypoints=52.08252052563214,5.094111780797001%7C52.085460892350405,5.102774' },
-//     { color: 'Cyan', url: 'https://www.google.com/maps/dir/?api=1&origin=52.079706,5.102774&destination=52.079706,5.102774&waypoints=52.07241737026239,5.102774%7C52.07712428483152,5.094828297728285' },
-//     { color: 'DarkGreen', url: 'https://www.google.com/maps/dir/?api=1&origin=52.079706,5.102774&destination=52.079706,5.102774&waypoints=52.07712428483152,5.094828297728285%7C52.08614209382956,5.098097904118596' },
-//     { color: 'Olive', url: 'https://www.google.com/maps/dir/?api=1&origin=52.079706,5.102774&destination=52.079706,5.102774&waypoints=52.08614209382956,5.098097904118596%7C52.085460892350405,5.102774' },
-//     { color: 'Yellow', url: 'https://www.google.com/maps/dir/?api=1&origin=52.079706,5.102774&destination=52.079706,5.102774&waypoints=52.076615830056255,5.112284565162952%7C52.07241737026239,5.102774' },
-//     { color: 'Magenta', url: 'https://www.google.com/maps/dir/?api=1&origin=52.079706,5.102774&destination=52.079706,5.102774&waypoints=52.07223585231417,5.108201379984234%7C52.073817957828425,5.098496086955659' },
-//     { color: 'Maroon', url: 'https://www.google.com/maps/dir/?api=1&origin=52.079706,5.102774&destination=52.079706,5.102774&waypoints=52.073817957828425,5.098496086955659%7C52.08252052563214,5.094111780797001' },
-//     { color: 'Blue', url: 'https://www.google.com/maps/dir/?api=1&origin=52.079706,5.102774&destination=52.079706,5.102774&waypoints=52.08279616994375,5.112284565162952%7C52.07223585231417,5.108201379984234' }
-// ];
 			// Function to display routeUrls in the HTML element
 			function displayRouteUrls() {
 				var container = document.getElementById('routeUrlsContent');
@@ -145,9 +118,11 @@
 					lng: longitude,
 					cycles: 4,
 					slices: 10,
-					type: document.getElementById('typeDuration').checked ? 'duration' : 'distance',
-					value: parseFloat(document.getElementById(document.getElementById('typeDuration').checked ? 'durationValue' : 'distanceValue').value.replace(',', '.')),
-					mode: document.getElementById('modeWalking').checked ? 'walking' : (document.getElementById('modeBicycling').checked ? 'bicycling' : (document.getElementById('modeDriving').checked ? 'driving' : 'transit')),
+					// type: document.getElementById('typeDuration').checked ? 'duration' : 'distance',
+					type : 'distance',
+					value: 1000/2.58*parseFloat(document.getElementById('distanceValue').value.replace(',', '.')), // 1000 to convert km to meters, and /2.58 since it is loop & sin36
+					// mode: document.getElementById('modeWalking').checked ? 'walking' : (document.getElementById('modeBicycling').checked ? 'bicycling' : (document.getElementById('modeDriving').checked ? 'driving' : 'transit')),
+					mode : 'walking',
 					callback: function (status, points) {
 						document.getElementById('computing').style.display = 'none';
 						if (status === 'OK') {
@@ -178,7 +153,8 @@
 										location: nextwaypoint,
 										stopover: true
 												}],
-									travelMode: google.maps.TravelMode[document.getElementById('modeWalking').checked ? 'WALKING' : (document.getElementById('modeBicycling').checked ? 'BICYCLING' : (document.getElementById('modeDriving').checked ? 'DRIVING' : 'TRANSIT'))]
+									// travelMode: google.maps.TravelMode[document.getElementById('modeWalking').checked ? 'WALKING' : (document.getElementById('modeBicycling').checked ? 'BICYCLING' : (document.getElementById('modeDriving').checked ? 'DRIVING' : 'TRANSIT'))]
+									travelMode: google.maps.TravelMode.WALKING
 								};
 								console.log('request:', request);
 								console.log('point:', point);
@@ -221,7 +197,7 @@
 											});
 
 											// Display only the top 4 routes with the lowest number of steps
-											var i = 4;
+											var i = 7;
 											
 											routeResults.slice(0, 4).forEach(function(routeResult) {
 											// routeResults.forEach(function(routeResult) {
@@ -230,7 +206,7 @@
 													polylineOptions: {
 														strokeColor: colors[routeResult.index % colors.length],
 														strokeOpacity: 1.0,
-														strokeWeight: 2*i,//4*(routeResult.index % 3 + 1)*(routeResults.length - routeResult.index)/routeResults.length,
+														strokeWeight: i,//4*(routeResult.index % 3 + 1)*(routeResults.length - routeResult.index)/routeResults.length,
 														// zIndex: routeResult.index // Set zIndex to ensure they don't overlap
 													}
 												});
@@ -259,8 +235,6 @@
 						}
 					}
 				});
-				// var staticMapUrl = generateStaticMapUrl(centralPoint, points);
-				// console.log(staticMapUrl);
 				return false;
 			}
 
