@@ -60,11 +60,11 @@
 			</div>
 			<div class="col-xs-12">
 				<!-- <div class="text-center alert alert-danger">Google has changed their <a href="https://developers.google.com/maps/pricing-and-plans/#details" target="_blank">pricing policy</a>, so this demo is limited to 2500 calls/day. Sorry for the inconvenience.</div> -->
-				<div class="text-center alert alert-info">Click on the map to choose another location</div>
+				<div class="text-center alert alert-info">Click on the map to choose your starting location</div>
 				<div id="theMap"></div>
 				<div class="text-center alert alert-info" id="routeUrlsContainer">
-					<label for="routeUrlsTextArea">Route URLs:</label>
-					<textarea id="routeUrlsTextArea" readonly rows="15" style="width: 100%;"></textarea>
+					<label for="routeUrlsContainer">Click the Route color Google Map !</label>
+					<div id="routeUrlsContent"></div>
 				</div>
 			</div>		
 		</div>
@@ -77,12 +77,34 @@
 					'#800000', '#008000', '#000080', '#808000', '#800080', '#008080'];
 					colorNames = ['Red', 'Green', 'Blue', 'Yellow', 'Magenta', 'Cyan',
 					'Maroon', 'DarkGreen', 'Navy', 'Olive', 'Purple', 'Teal'];
-					routeUrls = "";
-				// Function to display routeUrls in the HTML element
-				function displayRouteUrls() {
-					var textArea = document.getElementById('routeUrlsTextArea');
-					textArea.value = routeUrls.trim();
-				}
+					// routeUrls = "";
+					var routeUrls = [];
+//     { color: 'Purple', url: 'https://www.google.com/maps/dir/?api=1&origin=52.079706,5.102774&destination=52.079706,5.102774&waypoints=52.085460892350405,5.102774%7C52.086834512679644,5.107953167623184' },
+//     { color: 'Green', url: 'https://www.google.com/maps/dir/?api=1&origin=52.079706,5.102774&destination=52.079706,5.102774&waypoints=52.086834512679644,5.107953167623184%7C52.076615830056255,5.112284565162952' },
+//     { color: 'Red', url: 'https://www.google.com/maps/dir/?api=1&origin=52.079706,5.102774&destination=52.079706,5.102774&waypoints=52.085460892350405,5.102774%7C52.08279616994375,5.112284565162952' },
+//     { color: 'Navy', url: 'https://www.google.com/maps/dir/?api=1&origin=52.079706,5.102774&destination=52.079706,5.102774&waypoints=52.08252052563214,5.094111780797001%7C52.085460892350405,5.102774' },
+//     { color: 'Cyan', url: 'https://www.google.com/maps/dir/?api=1&origin=52.079706,5.102774&destination=52.079706,5.102774&waypoints=52.07241737026239,5.102774%7C52.07712428483152,5.094828297728285' },
+//     { color: 'DarkGreen', url: 'https://www.google.com/maps/dir/?api=1&origin=52.079706,5.102774&destination=52.079706,5.102774&waypoints=52.07712428483152,5.094828297728285%7C52.08614209382956,5.098097904118596' },
+//     { color: 'Olive', url: 'https://www.google.com/maps/dir/?api=1&origin=52.079706,5.102774&destination=52.079706,5.102774&waypoints=52.08614209382956,5.098097904118596%7C52.085460892350405,5.102774' },
+//     { color: 'Yellow', url: 'https://www.google.com/maps/dir/?api=1&origin=52.079706,5.102774&destination=52.079706,5.102774&waypoints=52.076615830056255,5.112284565162952%7C52.07241737026239,5.102774' },
+//     { color: 'Magenta', url: 'https://www.google.com/maps/dir/?api=1&origin=52.079706,5.102774&destination=52.079706,5.102774&waypoints=52.07223585231417,5.108201379984234%7C52.073817957828425,5.098496086955659' },
+//     { color: 'Maroon', url: 'https://www.google.com/maps/dir/?api=1&origin=52.079706,5.102774&destination=52.079706,5.102774&waypoints=52.073817957828425,5.098496086955659%7C52.08252052563214,5.094111780797001' },
+//     { color: 'Blue', url: 'https://www.google.com/maps/dir/?api=1&origin=52.079706,5.102774&destination=52.079706,5.102774&waypoints=52.08279616994375,5.112284565162952%7C52.07223585231417,5.108201379984234' }
+// ];
+			// Function to display routeUrls in the HTML element
+			function displayRouteUrls() {
+				var container = document.getElementById('routeUrlsContent');
+				container.innerHTML = ''; // Clear previous content
+				routeUrls.forEach(function(route) {
+					var link = document.createElement('a');
+					link.href = route.url;
+					link.textContent = route.color;
+					link.target = '_blank'; // Open link in a new tab
+					link.style.display = 'block'; // Display each link on a new line
+					link.style.color = route.color.toLowerCase(); // Set the text color to match the color name
+					container.appendChild(link);
+				});
+			}
 
 			isochrone.load({
 				map: 'theMap',
@@ -174,6 +196,7 @@
 										return `${encodeURIComponent(waypoint.lat)},${encodeURIComponent(waypoint.lng)}`;
 									}).join('%7C');
 									googleUrl += `&waypoints=${waypointsStr}`;
+									googleUrl += '&travelmode=walking';
 								}
 
 								console.log('Google Maps URL:', googleUrl);
@@ -200,8 +223,8 @@
 											// Display only the top 4 routes with the lowest number of steps
 											var i = 4;
 											
-											// routeResults.slice(0, 4).forEach(function(routeResult) {
-											routeResults.forEach(function(routeResult) {
+											routeResults.slice(0, 4).forEach(function(routeResult) {
+											// routeResults.forEach(function(routeResult) {
 												var directionsRenderer = new google.maps.DirectionsRenderer({
 													suppressMarkers: true,
 													polylineOptions: {
@@ -215,7 +238,12 @@
 												directionsRenderer.setMap(isochrone.map.map);
 												console.log('result:', routeResult.result, colors[routeResult.index % colors.length]);
 												i = i - 1;
-												routeUrls = routeUrls + colorNames[routeResult.index] + ": " + routeResult.url + "\n";
+												// Dynamically create the routeUrls
+												routeUrls.push({
+													color: colorNames[routeResult.index % colorNames.length],
+													url: routeResult.url // Assuming routeResult.url contains the URL
+												});
+												// routeUrls = routeUrls + colorNames[routeResult.index] + ": " + routeResult.url + "\n";
 											});
 											console.log('routeUrls:', routeUrls);
 											displayRouteUrls();
