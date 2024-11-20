@@ -62,7 +62,11 @@
 				<!-- <div class="text-center alert alert-danger">Google has changed their <a href="https://developers.google.com/maps/pricing-and-plans/#details" target="_blank">pricing policy</a>, so this demo is limited to 2500 calls/day. Sorry for the inconvenience.</div> -->
 				<div class="text-center alert alert-info">Click on the map to choose another location</div>
 				<div id="theMap"></div>
-			</div>
+				<div class="text-center alert alert-info" id="routeUrlsContainer">
+					<label for="routeUrlsTextArea">Route URLs:</label>
+					<textarea id="routeUrlsTextArea" readonly rows="15" style="width: 100%;"></textarea>
+				</div>
+			</div>		
 		</div>
 		<script type="text/javascript">
 			var marker = false,
@@ -70,25 +74,15 @@
 					latitude = 52.079706,
 					longitude = 5.102774;
 					colors =  ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF',
-        						'#800000', '#008000', '#000080', '#808000', '#800080', '#008080'];
-
-			function generateStaticMapUrl(centralPoint, points) {
-				var baseUrl = 'https://maps.googleapis.com/maps/api/staticmap?';
-				var params = [
-					'size=600x400',
-					'maptype=roadmap',
-					`markers=color:red|label:C|${centralPoint.lat},${centralPoint.lng}`
-				];
-
-				points.forEach(function(point, index) {
-					var color = colors[index % colors.length].substring(1); // Remove the '#' from the color
-					params.push(`path=color:0x${color}|weight:2|${centralPoint.lat},${centralPoint.lng}|${point.lat},${point.lng}`);
-				});
-
-				params.push('key=YOUR_API_KEY'); // Replace with your actual API key
-
-				return baseUrl + params.join('&');
-			}
+					'#800000', '#008000', '#000080', '#808000', '#800080', '#008080'];
+					colorNames = ['Red', 'Green', 'Blue', 'Yellow', 'Magenta', 'Cyan',
+					'Maroon', 'DarkGreen', 'Navy', 'Olive', 'Purple', 'Teal'];
+					routeUrls = "";
+				// Function to display routeUrls in the HTML element
+				function displayRouteUrls() {
+					var textArea = document.getElementById('routeUrlsTextArea');
+					textArea.value = routeUrls.trim();
+				}
 
 			isochrone.load({
 				map: 'theMap',
@@ -205,6 +199,7 @@
 
 											// Display only the top 4 routes with the lowest number of steps
 											var i = 4;
+											
 											// routeResults.slice(0, 4).forEach(function(routeResult) {
 											routeResults.forEach(function(routeResult) {
 												var directionsRenderer = new google.maps.DirectionsRenderer({
@@ -220,7 +215,10 @@
 												directionsRenderer.setMap(isochrone.map.map);
 												console.log('result:', routeResult.result, colors[routeResult.index % colors.length]);
 												i = i - 1;
+												routeUrls = routeUrls + colorNames[routeResult.index] + ": " + routeResult.url + "\n";
 											});
+											console.log('routeUrls:', routeUrls);
+											displayRouteUrls();
 										}
 									} else {
 										console.error('Directions request failed due to ' + status);
