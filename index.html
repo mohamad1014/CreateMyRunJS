@@ -43,7 +43,6 @@
 				</form>
 			</div>
 			<div class="col-xs-12">
-				<!-- <div class="text-center alert alert-danger">Google has changed their <a href="https://developers.google.com/maps/pricing-and-plans/#details" target="_blank">pricing policy</a>, so this demo is limited to 2500 calls/day. Sorry for the inconvenience.</div> -->
 				<div class="text-center alert alert-info">Click on the map to choose your starting location</div>
 				<div id="theMap"></div>
 				<div class="text-center alert alert-info" id="routeUrlsContainer">
@@ -61,7 +60,6 @@
 					'#800000', '#008000', '#000080', '#808000', '#800080', '#008080'];
 					colorNames = ['Red', 'Green', 'Blue', 'Yellow', 'Magenta', 'Cyan',
 					'Maroon', 'DarkGreen', 'Navy', 'Olive', 'Purple', 'Teal'];
-					// routeUrls = "";
 					var routeUrls = [];
 			// Function to display routeUrls in the HTML element
 			function displayRouteUrls() {
@@ -118,10 +116,8 @@
 					lng: longitude,
 					cycles: 4,
 					slices: 10,
-					// type: document.getElementById('typeDuration').checked ? 'duration' : 'distance',
 					type : 'distance',
 					value: 1000/2.58*parseFloat(document.getElementById('distanceValue').value.replace(',', '.')), // 1000 to convert km to meters, and /2.58 since it is loop & sin36
-					// mode: document.getElementById('modeWalking').checked ? 'walking' : (document.getElementById('modeBicycling').checked ? 'bicycling' : (document.getElementById('modeDriving').checked ? 'driving' : 'transit')),
 					mode : 'walking',
 					callback: function (status, points) {
 						document.getElementById('computing').style.display = 'none';
@@ -153,7 +149,6 @@
 										location: nextwaypoint,
 										stopover: true
 												}],
-									// travelMode: google.maps.TravelMode[document.getElementById('modeWalking').checked ? 'WALKING' : (document.getElementById('modeBicycling').checked ? 'BICYCLING' : (document.getElementById('modeDriving').checked ? 'DRIVING' : 'TRANSIT'))]
 									travelMode: google.maps.TravelMode.WALKING
 								};
 								console.log('request:', request);
@@ -207,7 +202,6 @@
 														strokeColor: colors[routeResult.index % colors.length],
 														strokeOpacity: 1.0,
 														strokeWeight: i,//4*(routeResult.index % 3 + 1)*(routeResults.length - routeResult.index)/routeResults.length,
-														// zIndex: routeResult.index // Set zIndex to ensure they don't overlap
 													}
 												});
 												directionsRenderer.setDirections(routeResult.result);
@@ -219,7 +213,6 @@
 													color: colorNames[routeResult.index % colorNames.length],
 													url: routeResult.url // Assuming routeResult.url contains the URL
 												});
-												// routeUrls = routeUrls + colorNames[routeResult.index] + ": " + routeResult.url + "\n";
 											});
 											console.log('routeUrls:', routeUrls);
 											displayRouteUrls();
