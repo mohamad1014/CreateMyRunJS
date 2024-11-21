@@ -18,13 +18,12 @@
 	<body>
 		<div class="container">
 			<div class="col-xs-12">
-				<h3>Generate a Run route</h3>
+				<h3 style="text-align: center;">Generate Your Unique Run!</h3>
 				<form action="index.html" method="get" onsubmit="return testIsochrone();">
 					<div class="form-group">
 						<div class="col-xs-12 row">
 							<div class="col-xs-6">
 								<div class="clearfix">
-									<!-- <div class="col-xs-2">- or -</div> -->
 									<div class="col-xs-5"><label>Total Distance</label></div>
 									<div class="col-xs-3"><input type="text" name="value" id="distanceValue" value="7" size="7" class="form-control"/></div>
 									<div class="col-xs-2">Kilometers</div>
@@ -32,7 +31,7 @@
 							</div>
 							<div class="col-xs-6">
 								<div class="col-xs-6">
-									<input type="submit" value="Create the Run!" class="form-control"/>
+									<input type="submit" value="Generate the Run!" class="form-control"/>
 								</div>
 								<div class="col-xs-6">
 									<div class="alert alert-warning" id="computing">Computing...</div>
@@ -75,6 +74,7 @@
 					link.target = '_blank'; // Open link in a new tab
 					link.style.display = 'block'; // Display each link on a new line
 					link.style.color = route.color.toLowerCase(); // Set the text color to match the color name
+					link.style.textDecoration = 'underline'; // Underline the link
 					container.appendChild(link);
 				});
 			}
@@ -127,7 +127,7 @@
 						document.getElementById('computing').style.display = 'none';
 						if (status === 'OK') {
 							polygon = new google.maps.Polygon({path: points});
-							polygon.setMap(isochrone.map.map);
+							// polygon.setMap(isochrone.map.map); Remove this comment to display the polygon
 							// Central point chosen by the user
 							var centralPoint = {lat: latitude, lng: longitude};
 
