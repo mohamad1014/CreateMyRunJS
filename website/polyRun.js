@@ -6,7 +6,7 @@ class LogManager {
 		this.logs.push(message);
 	}
 	sendLogs() {
-		fetch('http://localhost:7071/CreateMyRun', {
+		fetch('https://createmyrun.azurewebsites.net/CreateMyRun?', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
