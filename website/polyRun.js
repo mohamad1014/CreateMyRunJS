@@ -1,5 +1,26 @@
-/*! Isochrone and isodistance drawer for Google Maps by www.dugwood.com */  
-var isochrone = {  
+class LogManager {
+	constructor() {
+		this.logs = [];
+	}
+	addLog(message) {
+		this.logs.push(message);
+	}
+	sendLogs() {
+		fetch('http://localhost:7071/CreateMyRun', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({ messages: this.logs }),
+		}).catch((error) => {
+			console.error('Error sending logs to server:', error);
+		});
+	}
+}
+
+const logManager = new LogManager();
+
+var polyRun = {  
 	map: {  
 		id: '',  
 		map: false,  
@@ -44,7 +65,7 @@ var isochrone = {
 	},  
 	log: function (text) {  
 		if (this.debug) {  
-			console.log(text);  
+			logManager.addLog(text);
 		}  
 	},  
 	load: function (parameters) {  
@@ -63,12 +84,12 @@ var isochrone = {
 			/* API's key provided => load the API */  
 			var s = document.createElement('script'), h = document.head;  
 			s.async = true;  
-			s.src = 'https://maps.googleapis.com/maps/api/js?key=' + parameters.key + '&callback=isochrone.init';  
+			s.src = 'https://maps.googleapis.com/maps/api/js?key=' + parameters.key + '&callback=polyRun.init';  
 			h.appendChild(s);  
 		} else {  
 			/* API is already loaded, initializing */  
 			this.init();  
-		}  
+		}
 	},  
 	init: function () {  
 		this.map.map = new google.maps.Map(document.getElementById(this.map.id), {  
@@ -122,7 +143,6 @@ var isochrone = {
 		}  
 		this.computation.precision = parseInt(parameters.precision || 5) / 100;  
 		this.computation.system = parameters.system && parameters.system === 'imperial' ? google.maps.UnitSystem.IMPERIAL : google.maps.UnitSystem.METRIC;  
-  
 		/* Cut the circle in «slices» */  
 		this.computation.positions = [];  
 		var radius = this.radius[this.computation.type][this.computation.mode] * this.computation.value / 1000000;  
@@ -152,45 +172,44 @@ var isochrone = {
 		this.cycle();  
 	},  
 	cycle: function () {  
-		var computation = isochrone.computation;  
-		console.log(`Cycle ${computation.cycle + 1}/${computation.cycles}`);  
+		var computation = polyRun.computation;  
+		logManager.addLog(`Cycle ${computation.cycle + 1}/${computation.cycles}`);  
 		if (computation.cycle++ >= computation.cycles) {  
-			return isochrone.computationCallback('OK');  
-		}  
+			return polyRun.computationCallback('OK');  
+		}
 		var p = 0, position, destinations = [], relations = [];  
 		for (; p < computation.positions.length; p++) {  
-			position = computation.positions[p];  
+			position = computation.positions[p];
+			logManager.addLog(`Position: ${JSON.stringify(position)}`); 
 			if (!position.found) {  
 				position.lat = computation.lat + position.radius * Math.cos(position.radians);  
 				position.lng = computation.lng + position.radius * Math.sin(position.radians);  
-				// Log each point created  
-				console.log(`Point created: (lat: ${position.lat}, lng: ${position.lng})`);  
+				logManager.addLog(`Point created: (lat: ${position.lat}, lng: ${position.lng})`);  
 				destinations.push(new google.maps.LatLng(position.lat, position.lng));  
 				relations.push(p);  
 			}  
 		}  
 		if (!destinations.length) {  
-			return isochrone.computationCallback('OK');  
+			return polyRun.computationCallback('OK');  
 		}  
-		isochrone.service.getDistanceMatrix({  
+		polyRun.service.getDistanceMatrix({  
 			origins: [new google.maps.LatLng(computation.lat, computation.lng)],  
 			destinations: destinations,  
 			travelMode: computation.mode,  
 			unitSystem: computation.system,  
 		}, function (data, result) {  
-			// Log the response from the API  
-			console.log('API Response:', data, result);  
+			logManager.addLog(`distanceMatrixResponse: ${JSON.stringify(data)}`);
 			if (result !== 'OK') {  
 				if (result === 'OVER_QUERY_LIMIT' && computation.errors++ <= 10) {  
 					computation.cycle--;  
-					isochrone.requests = Math.max(0.5, isochrone.requests - 0.5);  
-					setTimeout(isochrone.cycle, 2000);  
+					polyRun.requests = Math.max(0.5, polyRun.requests - 0.5);  
+					setTimeout(polyRun.cycle, 2000);  
 					return false;  
 				}  
-				return isochrone.computationCallback(result);  
+				return polyRun.computationCallback(result);  
 			}  
 			if ((typeof data.rows[0].elements) === 'undefined' || data.rows[0].elements.length !== destinations.length) {  
-				return isochrone.computationCallback('LENGTH');  
+				return polyRun.computationCallback('LENGTH');  
 			}  
 			for (var i = 0; i < data.rows[0].elements.length; i++) {  
 				var d = data.rows[0].elements[i],  
@@ -236,19 +255,20 @@ var isochrone = {
 					}  
 				}  
 			}  
-			setTimeout(isochrone.cycle, parseInt(1000 / isochrone.requests));  
+			setTimeout(polyRun.cycle, parseInt(1000 / polyRun.requests));  
 		});  
 	},  
 	computationCallback: function (status, message) {  
 		message = message || '';  
 		if (message) {  
-			isochrone.log(message);  
+			logManager.addLog(message);  
 		}  
-		var computation = isochrone.computation;  
+		var computation = polyRun.computation;  
 		if (computation.positions.length) {  
 			computation.positions.push(computation.positions[0]); // Close the polygon for easier drawing  
 		}  
+		// logManager.sendLogs();
 		computation.callback(status, computation.positions);  
 		return false;  
 	}  
-};  
+};
