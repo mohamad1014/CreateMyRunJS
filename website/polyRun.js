@@ -75,8 +75,8 @@ var polyRun = {
 		}  
 		this.map.id = parameters.map;  
 		this.map.zoom = parameters.zoom || 14;  
-		this.map.lat = parameters.lat || 52.0921028;  
-		this.map.lng = parameters.lng || 5.1161569;  
+		this.map.lat = parameters.lat || 52.093176;  
+		this.map.lng = parameters.lng || 5.118753;  
 		this.callback = parameters.callback || false;  
 		this.requests = parseFloat(parameters.requests || 2);  
 		this.debug = parameters.debug || false;  
