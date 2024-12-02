@@ -72,7 +72,7 @@
 					colorNames = ['Red', 'Green', 'Blue', 'Yellow', 'Magenta', 'Cyan',
 					'Maroon', 'DarkGreen', 'Navy', 'Olive', 'Purple', 'Teal'];
 					var routeUrls = [];
-					var logslist = [];
+					uniqueSessionId = Date.now() + Math.random().toString(36).substr(2, 9);
 
 			polyRun.load({
 				map: 'theMap',
@@ -98,6 +98,7 @@
 				},
 				debug: true
 			});
+			logManager.addLog(`ID: ${uniqueSessionId}`);
 			/* Allow to click on the map */
 			function testPolyRun()
 			{
@@ -205,10 +206,13 @@
 													url: routeResult.url // Assuming routeResult.url contains the URL
 												});
 											});
-											logManager.sendLogs();
 											displayRouteUrls();
+											logManager.sendLogs();
+
 										}
 									} else {
+										logManager.addLog('error: Directions request failed due to ' + status);
+										logManager.sendLogs();
 										console.error('Directions request failed due to ' + status);
 									}
 								});
