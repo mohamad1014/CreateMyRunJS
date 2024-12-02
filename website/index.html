@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 	<head>
@@ -35,14 +34,14 @@
 						<div class="col-xs-12 row">
 							<div class="col-xs-6">
 								<div class="clearfix">
-									<div class="col-xs-5"><label>Total Distance</label></div>
+									<div class="col-xs-5"><label><h3 style="text-align: center;">Distance</h3></label></div>
 									<div class="col-xs-3"><input type="text" name="value" id="distanceValue" value="7" size="7" class="form-control"/></div>
-									<div class="col-xs-2">Kilometers</div>
+									<div class="col-xs-2"><h3 style="text-align: center;">Kilometers</h3></div>
 								</div>
 							</div>
 							<div class="col-xs-6">
 								<div class="col-xs-6">
-									<input type="submit" value="Generate the Run!" class="form-control"/>
+									<input type="submit" value="Create!" class="form-control"/>
 								</div>
 								<div class="col-xs-6">
 									<div class="alert alert-warning" id="computing">Computing...</div>
@@ -61,6 +60,20 @@
 					<div id="routeUrlsContent"></div>
 				</div>
 			</div>		
+		</div>
+		<div class="container">
+			<div class="col-xs-12">
+				<!-- Feedback form -->
+				<h3 style="text-align: center;">Feedback</h3>
+				<form onsubmit="return submitFeedback();">
+					<div class="form-group">
+						<textarea id="feedbackText" class="form-control" rows="4" placeholder="Write any feedback, ideas, thoughts, route chosen and why, etc..."></textarea>
+					</div>
+					<div class="form-group">
+						<input type="submit" value="Submit Feedback" class="form-control btn btn-primary"/>
+					</div>
+				</form>
+			</div>
 		</div>
 		<script type="text/javascript">
 			var marker = false,
@@ -224,8 +237,19 @@
 					}
 				});
 				return false;
+				}
+			function submitFeedback() {
+				var feedbackText = document.getElementById('feedbackText').value;
+				if (feedbackText) {
+					logManager.addLog(`Feedback: ${feedbackText}`);
+					logManager.sendLogs();
+					alert('Thank you for your feedback!');
+					document.getElementById('feedbackText').value = ''; // Clear the textarea
+				} else {
+					alert('Please enter your feedback before submitting.');
+				}
+				return false; // Prevent form submission
 			}
-
 		</script>
 	</body>
 </html>
