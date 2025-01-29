@@ -3,6 +3,7 @@ import logging
 import os
 import uuid
 import json
+import requests
 from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
@@ -13,6 +14,10 @@ blob_service_client = BlobServiceClient.from_connection_string(connect_str)
 container_name = "create-my-run-logs"
 container_client = blob_service_client.get_container_client(container_name)
 
+# Initialize the telegram variables
+BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+logging.info(f"Telegram bot token: {BOT_TOKEN} and Chat_ID {CHAT_ID}" )
 # Create the container if it does not exist
 if not container_client.exists():
     container_client.create_container()
@@ -50,6 +55,16 @@ def CreateMyRun(req: func.HttpRequest) -> func.HttpResponse:
         # Upload the messages as a text file
         blob_client.upload_blob(messages_str, overwrite=True)
         logging.info(f"Messages stored in blob: {unique_filename}")
+
+        # Send a message to the Telegram chat
+        message = f"New messages received and stored in blob: {unique_filename}"
+        url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+        payload = {
+            "chat_id": CHAT_ID,
+            "text": message
+        }
+        response = requests.post(url, json=payload)
+        logging.info(f"Telegram response: {response.text}")
 
         return func.HttpResponse(
             f"Received messages: {messages_str}",
