@@ -3,7 +3,7 @@ name: Deploy to S3
 on:
   pull_request:
     branches:
-      - dev
+      - master
 
 jobs:
   deploy:
