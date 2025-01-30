@@ -2,6 +2,10 @@
 
 CreateMyRunJS is a web application that allows users to generate unique running routes based on their preferences. The application uses Google Maps API to display maps and calculate routes, and Azure Functions to handle server-side operations and logging.
 
+Map can be tested on **https://createmyrun.com**
+
+API Keys are restricted or deleted. Use your own.
+
 ## Features
 
 - Generate running routes based on distance and starting location
